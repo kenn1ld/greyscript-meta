@@ -12,7 +12,8 @@
     "clean": "rm -rf dist",
     "test": "jest ./tests",
     "lint": "eslint ./src/**/*.ts",
-    "lint:fix": "eslint --fix ./src/**/*.ts"
+    "lint:fix": "eslint --fix ./src/**/*.ts",
+    "build:docs": "node scripts/generate-ui.js"
   },
   "repository": {
     "type": "git",
