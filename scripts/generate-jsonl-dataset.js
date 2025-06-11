@@ -24,24 +24,45 @@ for (const file of descFiles) {
 }
 
 const entries = [];
+const SYSTEM_PROMPT = 'You are a helpful assistant for the GreyScript API.';
+
+const fmtArgs = (args = []) =>
+  args
+    .map((a) => `${a.label}: ${a.type}${a.opt ? '?' : ''}`)
+    .join(', ');
+
+const fmtReturns = (returns = []) =>
+  returns
+    .map((r) => (typeof r === 'string' ? r : JSON.stringify(r)))
+    .join(' | ') || 'void';
+
 for (const [name, sig] of Object.entries(signatures)) {
   const desc = descriptions[name] || {};
   if (desc.$meta && desc.$meta.description) {
     entries.push({
-      object: name,
-      member: null,
-      description: desc.$meta.description,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: `Explain the ${name} object.` },
+        { role: 'assistant', content: desc.$meta.description },
+      ],
     });
   }
   for (const [method, def] of Object.entries(sig.definitions || {})) {
     const descEntry = desc[method] || {};
+    const signature = `${name}.${method}(${fmtArgs(def.arguments)}) -> ${fmtReturns(
+      def.returns,
+    )}`;
+    let reply = `Signature: ${signature}`;
+    if (descEntry.description) reply += `\n${descEntry.description}`;
+    if (Array.isArray(descEntry.example) && descEntry.example.length) {
+      reply += `\nExample:\n${descEntry.example.join('\n')}`;
+    }
     entries.push({
-      object: name,
-      member: method,
-      arguments: def.arguments || [],
-      returns: def.returns || [],
-      description: descEntry.description || '',
-      example: Array.isArray(descEntry.example) ? descEntry.example : [],
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: `Explain ${name}.${method}.` },
+        { role: 'assistant', content: reply },
+      ],
     });
   }
 }
