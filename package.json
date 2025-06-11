@@ -14,8 +14,8 @@
     "lint": "eslint ./src/**/*.ts",
     "lint:fix": "eslint --fix ./src/**/*.ts",
     "build:docs": "node scripts/generate-ui.js",
-    "build:text-docs": "node scripts/generate-text-docs.js"
-    "build:docs": "node scripts/generate-ui.js"
+    "build:text-docs": "node scripts/generate-text-docs.js",
+    "build:jsonl": "node scripts/generate-jsonl-dataset.js"
   },
   "repository": {
     "type": "git",
